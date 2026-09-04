@@ -1,0 +1,21 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Flow logo</title>
+  <desc id="desc">A premium abstract Flow mark with layered project paths.</desc>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <path d="M36 42C36 35.373 41.373 30 48 30H92C95.314 30 98 32.686 98 36C98 39.314 95.314 42 92 42H50C48.895 42 48 42.895 48 44V52C48 53.105 48.895 54 50 54H82C88.627 54 94 59.373 94 66C94 72.627 88.627 78 82 78H50C48.895 78 48 78.895 48 80V94C48 97.314 45.314 100 42 100C38.686 100 36 97.314 36 94V42Z" fill="white" fill-opacity="0.96"/>
+  <path d="M56 60H82C85.314 60 88 62.686 88 66C88 69.314 85.314 72 82 72H56V60Z" fill="url(#cut)" fill-opacity="0.72"/>
+  <circle cx="93" cy="36" r="7" fill="#22D3EE"/>
+  <circle cx="42" cy="94" r="7" fill="#A78BFA"/>
+  <path d="M28 104C50 112 82 112 104 88" stroke="white" stroke-opacity="0.28" stroke-width="8" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="bg" x1="18" y1="14" x2="112" y2="118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="0.52" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="cut" x1="56" y1="60" x2="88" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DBEAFE"/>
+      <stop offset="1" stop-color="#C4B5FD"/>
+    </linearGradient>
+  </defs>
+</svg>
