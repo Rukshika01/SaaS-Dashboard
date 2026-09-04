@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { CalendarClock, Sparkles } from 'lucide-react';
+import { ArrowUpRight, CalendarClock, Circle, Clock3, Sparkles } from 'lucide-react';
 import { ProductivityChart } from '../components/charts/ProductivityChart';
 import { Sparkline } from '../components/charts/Sparkline';
 import { AvatarStack } from '../components/ui/AvatarStack';
@@ -9,104 +9,44 @@ import { ProgressBar } from '../components/ui/ProgressBar';
 import { activities, deadlines, kpis, projects } from '../data/dashboard';
 import { useCountUp } from '../hooks/useCountUp';
 
-const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
-const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } };
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.06 } } };
+const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: .24 } } };
+const kpiStyles = [
+  { tint: 'from-indigo-500/14 to-violet-500/8', icon: 'bg-indigo-500/12 text-indigo-700 dark:text-indigo-300', dot: 'bg-indigo-500', line: '#6366f1' },
+  { tint: 'from-blue-500/12 to-cyan-500/8', icon: 'bg-blue-500/12 text-blue-700 dark:text-blue-300', dot: 'bg-blue-500', line: '#2563eb' },
+  { tint: 'from-emerald-500/12 to-teal-500/8', icon: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300', dot: 'bg-emerald-500', line: '#10b981' },
+  { tint: 'from-amber-500/12 to-violet-500/8', icon: 'bg-amber-500/12 text-amber-700 dark:text-amber-300', dot: 'bg-amber-500', line: '#f59e0b' },
+];
+function statusTone(status: string) { return status === 'On track' ? 'success' : status === 'At risk' ? 'warning' : status === 'Planning' ? 'neutral' : 'success'; }
+function progressTone(status: string) { return status === 'On track' ? 'green' : status === 'At risk' ? 'amber' : status === 'Planning' ? 'blue' : 'violet'; }
 
-function statusTone(status: string) {
-  if (status === 'On track') return 'success';
-  if (status === 'At risk') return 'danger';
-  if (status === 'Planning') return 'warning';
-  return 'neutral';
+function KpiCard({ kpi, index }: { kpi: (typeof kpis)[number]; index: number }) {
+  const Icon = kpi.icon; const value = useCountUp(kpi.value, 900); const style = kpiStyles[index];
+  return <Card className={`relative overflow-hidden rounded-[1.25rem] bg-gradient-to-br ${style.tint}`}>
+    <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-white/35 dark:bg-white/5" />
+    <div className="relative flex items-start justify-between gap-4"><div><div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${style.dot}`}/><p className="text-sm font-medium text-muted">{kpi.label}</p></div><p className="mt-3 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">{value}{kpi.suffix}</p></div><div className={`grid h-11 w-11 place-items-center rounded-xl ${style.icon}`}><Icon size={20}/></div></div>
+    <div className="relative mt-6 flex items-end justify-between gap-4"><p className="text-sm text-muted"><span className="font-semibold text-emerald-600 dark:text-emerald-300">{kpi.change}</span> {kpi.detail}</p><Sparkline data={kpi.spark} color={style.line}/></div>
+  </Card>;
 }
 
-function KpiCard({ kpi }: { kpi: (typeof kpis)[number] }) {
-  const Icon = kpi.icon;
-  const value = useCountUp(kpi.value);
-  return (
-    <Card className="overflow-hidden">
-      <div className="flex items-start justify-between gap-4">
-        <div className="grid h-11 w-11 place-items-center rounded-xl bg-flow-500/10 text-flow-700 dark:text-flow-300"><Icon size={21} /></div>
-        <Sparkline data={kpi.spark} />
-      </div>
-      <div className="mt-5">
-        <p className="text-sm font-medium text-muted">{kpi.label}</p>
-        <p className="mt-1 text-3xl font-semibold tracking-tight">{value}{kpi.suffix}</p>
-        <p className="mt-3 text-sm text-muted"><span className="font-semibold text-emerald-600 dark:text-emerald-300">{kpi.change}</span> {kpi.detail}</p>
-      </div>
-    </Card>
-  );
+function ProjectPulse() {
+  return <motion.section variants={item} className="surface-card rounded-[1.25rem] p-5 sm:p-6 xl:col-span-5"><div className="mb-6 flex items-start justify-between"><div><p className="text-xs font-medium uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300">Project pulse</p><h2 className="mt-1 text-xl font-semibold tracking-tight">Delivery health</h2></div><Badge tone="success">Live</Badge></div><div className="space-y-5">{projects.map((project) => <article key={project.name} className="group rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--surface-raised))]/40 p-4 transition duration-200 hover:border-indigo-400/50 hover:bg-[rgb(var(--surface-raised))]/80"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className="truncate font-semibold">{project.name}</h3><p className="mt-1 line-clamp-1 text-sm text-muted">{project.description}</p></div><Badge tone={statusTone(project.status)}>{project.status}</Badge></div><div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]"><div><div className="mb-2 flex justify-between text-sm"><span className="text-muted">Progress</span><span className="font-medium">{project.progress}%</span></div><ProgressBar value={project.progress} tone={progressTone(project.status)}/></div><div className="flex items-center justify-between gap-4 sm:justify-end"><AvatarStack members={project.members}/><span className="flex items-center gap-1.5 whitespace-nowrap text-sm text-muted"><CalendarClock size={15}/>{project.dueDate}</span></div></div></article>)}</div></motion.section>;
+}
+
+function ActivityTimeline() {
+  const dots = ['bg-indigo-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500'];
+  return <motion.section variants={item} className="surface-card rounded-[1.25rem] p-5 sm:p-6 xl:col-span-4"><div className="mb-6"><p className="text-xs font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">Today</p><h2 className="mt-1 text-xl font-semibold tracking-tight">Activity stream</h2></div><div className="space-y-1">{activities.map((activity, index) => <div key={`${activity.user}-${activity.time}`} className="relative flex gap-3 rounded-xl p-3 transition hover:bg-[rgb(var(--bg-soft))]/70">{index < activities.length - 1 && <span className="absolute left-[1.85rem] top-12 h-8 w-px bg-[rgb(var(--border))]"/>}<div className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-950 text-sm font-semibold text-white shadow-sm dark:bg-white dark:text-slate-950"><span className={`absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-[rgb(var(--surface))] ${dots[index % dots.length]}`}/>{activity.avatar}</div><p className="text-sm leading-6"><span className="font-semibold">{activity.user}</span> <span className="text-muted">{activity.action}</span> <span className="font-medium">“{activity.item}”</span><br/><span className="text-xs text-soft">{activity.context} · {activity.time}</span></p></div>)}</div></motion.section>;
+}
+
+function Deadlines() {
+  return <motion.section variants={item} className="surface-card rounded-[1.25rem] p-5 sm:p-6 xl:col-span-3"><div className="mb-6"><p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">Next up</p><h2 className="mt-1 text-xl font-semibold tracking-tight">Deadlines</h2></div><div className="space-y-3">{deadlines.map((d) => <article key={d.task} className="relative overflow-hidden rounded-2xl border border-[rgb(var(--border))] p-4 transition hover:bg-[rgb(var(--surface-raised))]/55"><span className={`absolute inset-y-0 left-0 w-1 ${d.priority === 'Urgent' ? 'bg-rose-500' : d.priority === 'High' ? 'bg-amber-500' : 'bg-indigo-500'}`}/><div className="flex items-start justify-between gap-3"><p className="font-medium leading-snug">{d.task}</p><Badge tone={d.priority === 'Urgent' ? 'danger' : d.priority === 'High' ? 'warning' : 'neutral'}>{d.priority}</Badge></div><p className="mt-2 text-sm text-muted">{d.project}</p><div className="mt-4 flex items-center justify-between text-sm"><span className="flex items-center gap-1.5 text-muted"><Clock3 size={15}/>{d.due}</span><span className="font-medium">{d.assignee}</span></div></article>)}</div></motion.section>;
 }
 
 export function Dashboard() {
-  return (
-    <motion.div variants={container} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6">
-      <motion.section variants={item} className="relative overflow-hidden rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--surface))]/74 p-6 shadow-xl shadow-slate-900/5 backdrop-blur-xl sm:p-8">
-        <div className="absolute right-8 top-6 hidden h-32 w-32 rounded-full bg-flow-500/10 blur-3xl sm:block" />
-        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[rgb(var(--border))] bg-[rgb(var(--surface-raised))]/70 px-3 py-1 text-xs font-medium text-muted"><Sparkles size={14} /> Monday planning digest</div>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Good morning, Alex 👋</h2>
-            <p className="mt-2 max-w-2xl text-muted">Here's what's happening with your projects today.</p>
-          </div>
-          <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg-soft))]/70 p-4">
-            <p className="text-sm text-muted">Team focus score</p>
-            <p className="mt-1 text-2xl font-semibold">87%</p>
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section variants={container} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((kpi) => <motion.div variants={item} key={kpi.label}><KpiCard kpi={kpi} /></motion.div>)}
-      </motion.section>
-
-      <div className="grid gap-6 lg:grid-cols-12">
-        <motion.section variants={item} className="surface-card rounded-2xl p-5 lg:col-span-7">
-          <div className="mb-5 flex items-center justify-between"><div><h2 className="text-lg font-semibold">Project overview</h2><p className="text-sm text-muted">Critical initiatives moving this week.</p></div></div>
-          <div className="space-y-4">
-            {projects.map((project) => (
-              <article key={project.name} className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--surface-raised))]/50 p-4 transition hover:bg-[rgb(var(--surface-raised))]">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div><h3 className="font-semibold">{project.name}</h3><p className="mt-1 text-sm text-muted">{project.description}</p></div>
-                  <Badge tone={statusTone(project.status)}>{project.status}</Badge>
-                </div>
-                <div className="mt-4 flex items-center justify-between text-sm"><span className="text-muted">Progress</span><span className="font-medium">{project.progress}%</span></div>
-                <div className="mt-2"><ProgressBar value={project.progress} /></div>
-                <div className="mt-4 flex items-center justify-between"><AvatarStack members={project.members} /><p className="flex items-center gap-1.5 text-sm text-muted"><CalendarClock size={15} />{project.dueDate}</p></div>
-              </article>
-            ))}
-          </div>
-        </motion.section>
-        <ProductivityChart />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-12">
-        <motion.section variants={item} className="surface-card rounded-2xl p-5 lg:col-span-5">
-          <h2 className="text-lg font-semibold">Recent activity</h2>
-          <div className="mt-5 space-y-4">
-            {activities.map((activity) => (
-              <div key={`${activity.user}-${activity.time}`} className="flex gap-3">
-                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-900 text-sm font-semibold text-white dark:bg-white dark:text-slate-950">{activity.avatar}</div>
-                <p className="text-sm leading-6"><span className="font-semibold">{activity.user}</span> <span className="text-muted">{activity.action}</span> <span className="font-medium">“{activity.item}”</span><br /><span className="text-xs text-soft">{activity.context} · {activity.time}</span></p>
-              </div>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section variants={item} className="surface-card rounded-2xl p-5 lg:col-span-7">
-          <h2 className="text-lg font-semibold">Upcoming deadlines</h2>
-          <div className="mt-5 overflow-x-auto">
-            <table className="w-full min-w-[620px] text-left text-sm">
-              <thead className="text-xs uppercase tracking-wide text-soft"><tr><th className="pb-3 font-medium">Task</th><th className="pb-3 font-medium">Project</th><th className="pb-3 font-medium">Due</th><th className="pb-3 font-medium">Priority</th><th className="pb-3 font-medium">Assignee</th></tr></thead>
-              <tbody className="divide-y divide-[rgb(var(--border))]">{deadlines.map((deadline) => <tr key={deadline.task}><td className="py-3 font-medium">{deadline.task}</td><td className="py-3 text-muted">{deadline.project}</td><td className="py-3 text-muted">{deadline.due}</td><td className="py-3"><Badge tone={deadline.priority === 'Urgent' ? 'danger' : deadline.priority === 'High' ? 'warning' : 'neutral'}>{deadline.priority}</Badge></td><td className="py-3 text-muted">{deadline.assignee}</td></tr>)}</tbody>
-            </table>
-          </div>
-        </motion.section>
-      </div>
-
-      <motion.section variants={item}>
-        <div className="mb-4"><h2 className="text-lg font-semibold">Recent projects</h2><p className="text-sm text-muted">A focused view of current delivery health.</p></div>
-        <div className="grid gap-4 md:grid-cols-3">{projects.map((project) => <Card key={project.name}><div className="flex items-start justify-between gap-3"><h3 className="font-semibold">{project.name}</h3><Badge tone={statusTone(project.status)}>{project.status}</Badge></div><p className="mt-2 text-sm text-muted">{project.description}</p><div className="mt-5"><div className="mb-2 flex justify-between text-sm"><span className="text-muted">Completion</span><span className="font-medium">{project.progress}%</span></div><ProgressBar value={project.progress} /></div><div className="mt-5 flex items-center justify-between"><AvatarStack members={project.members} /><span className="text-sm text-muted">Due {project.dueDate}</span></div></Card>)}</div>
-      </motion.section>
-    </motion.div>
-  );
+  return <motion.div variants={container} initial="hidden" animate="show" className="mx-auto max-w-[90rem] space-y-6">
+    <motion.section variants={item} className="dashboard-hero relative overflow-hidden rounded-[1.5rem] border border-[rgb(var(--border))] p-6 shadow-xl shadow-indigo-950/5 sm:p-8 lg:p-10"><div className="absolute inset-x-0 top-0 h-1 aurora-line"/><div className="absolute -right-12 -top-14 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl"/><div className="relative grid gap-8 lg:grid-cols-[1fr_360px]"><div className="max-w-3xl"><div className="mb-5 inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300"><Sparkles size={14}/> Monday planning digest</div><h2 className="text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">Good morning, Alex.</h2><p className="mt-4 max-w-2xl text-base leading-7 text-muted sm:text-lg">Here’s the concise view of project momentum, team focus, and the decisions that need attention today.</p><div className="mt-7 flex flex-wrap gap-3"><button className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-medium text-white shadow-lg shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-500">Review priorities <ArrowUpRight size={16}/></button><button className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--surface))]/70 px-4 text-sm font-medium text-muted transition hover:bg-[rgb(var(--surface-raised))]">Open command <span className="rounded-md border border-[rgb(var(--border))] px-1.5 py-0.5 text-xs">⌘K</span></button></div></div><div className="rounded-2xl border border-indigo-500/15 bg-gradient-to-br from-indigo-500/12 via-violet-500/8 to-cyan-500/10 p-5"><div className="flex items-center justify-between"><p className="text-sm font-medium text-muted">Weekly focus score</p><Circle className="fill-emerald-500 text-emerald-500" size={10}/></div><p className="mt-3 text-5xl font-semibold tracking-[-0.05em]">87%</p><p className="mt-3 text-sm leading-6 text-muted">Team productivity is up 5.1% with three projects trending on schedule.</p><div className="mt-5"><ProgressBar value={87} tone="violet"/></div></div></div></motion.section>
+    <motion.section variants={container} className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{kpis.map((kpi, index) => <motion.div variants={item} key={kpi.label}><KpiCard kpi={kpi} index={index}/></motion.div>)}</motion.section>
+    <div className="grid gap-6 xl:grid-cols-12"><ProductivityChart className="xl:col-span-7"/><ProjectPulse /></div>
+    <div className="grid gap-6 xl:grid-cols-12"><ActivityTimeline/><Deadlines/><motion.section variants={item} className="xl:col-span-5"><div className="mb-4 flex items-end justify-between"><div><p className="text-xs font-medium uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">Portfolio</p><h2 className="mt-1 text-xl font-semibold tracking-tight">Recent projects</h2></div></div><div className="grid gap-4 sm:grid-cols-2">{projects.slice(0,2).map((project) => <Card key={project.name} className="rounded-[1.25rem]"><div className="flex items-start justify-between gap-3"><h3 className="font-semibold">{project.name}</h3><Badge tone={statusTone(project.status)}>{project.status}</Badge></div><p className="mt-2 text-sm leading-6 text-muted">{project.description}</p><div className="mt-5"><div className="mb-2 flex justify-between text-sm"><span className="text-muted">Completion</span><span className="font-medium">{project.progress}%</span></div><ProgressBar value={project.progress} tone={progressTone(project.status)}/></div><div className="mt-5 flex items-center justify-between"><AvatarStack members={project.members}/><span className="text-sm text-muted">Due {project.dueDate}</span></div></Card>)}</div></motion.section></div>
+  </motion.div>;
 }
