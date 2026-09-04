@@ -53,12 +53,14 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html, body, button, input, select, textarea { transition: background-color .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease; }
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgb(var(--brand) / 0.13), transparent 34rem),
+    radial-gradient(circle at 10% 0%, rgb(var(--brand) / 0.13), transparent 34rem),
+    radial-gradient(circle at 85% 10%, rgb(var(--brand-2) / 0.08), transparent 28rem),
     linear-gradient(135deg, rgb(var(--bg)), rgb(var(--bg-soft)));
   color: rgb(var(--text));
   font-family: var(--font-sans);

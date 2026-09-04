@@ -10,6 +10,7 @@ import { Analytics } from './pages/Analytics';
 import { Messages } from './pages/Messages';
 import { Notifications } from './pages/Notifications';
 import { Settings } from './pages/Settings';
+import { ToastProvider } from './context/ToastContext';
 
 function CurrentPage() {
   const { page, selectedProjectId } = useFlow();
@@ -19,5 +20,5 @@ function CurrentPage() {
 }
 
 export function App() {
-  return <FlowProvider><AppShell><CurrentPage /></AppShell></FlowProvider>;
+  return <FlowProvider><ToastProvider><AppShell><CurrentPage /></AppShell></ToastProvider></FlowProvider>;
 }

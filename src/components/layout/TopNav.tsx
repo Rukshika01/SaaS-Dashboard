@@ -18,7 +18,7 @@ export function TopNav({ theme, onThemeToggle, onMenu }: { theme: 'light' | 'dar
           <Search size={17} />
           <input className="w-full bg-transparent outline-none placeholder:text-soft" placeholder="Search projects, tasks, people..." />
         </label>
-        <Button variant="surface" className="hidden md:inline-flex" aria-label="Open command palette"><Command size={16} />⌘K</Button>
+        <Button variant="surface" className="hidden md:inline-flex" aria-label="Open command palette" onClick={() => window.dispatchEvent(new Event('flow:command'))}><Command size={16} /><span>⌘K</span></Button>
         <Button variant="surface" aria-label="Notifications" className="relative"><Bell size={17} />{notifications.some(n => !n.read) && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500" />}</Button>
         <Button variant="surface" onClick={onThemeToggle} aria-label="Toggle theme">{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}</Button>
         <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-900 text-sm font-semibold text-white dark:bg-white dark:text-slate-950" aria-label="Alex Morgan avatar">A</div>
