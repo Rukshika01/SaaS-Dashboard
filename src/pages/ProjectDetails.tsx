@@ -1,0 +1,21 @@
+import { useState } from 'react';
+import { BarChart3, FileText, MessageSquare, TimerReset } from 'lucide-react';
+import { useFlow } from '../context/FlowContext';
+import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
+import { Badge } from '../components/ui/Badge';
+import { Tabs } from '../components/ui/Tabs';
+import { ProgressBar } from '../components/ui/ProgressBar';
+import { AvatarStack } from '../components/ui/AvatarStack';
+import { ProductivityChart } from '../components/charts/ProductivityChart';
+
+const tabs = ['Overview', 'Tasks', 'Team', 'Timeline', 'Files', 'Activity', 'Comments', 'Analytics'] as const;
+export function ProjectDetails() {
+  const { projects, tasks, team, selectedProjectId, setSelectedProjectId } = useFlow();
+  const project = projects.find(p => p.id === selectedProjectId) ?? projects[0];
+  const [tab, setTab] = useState<(typeof tabs)[number]>('Overview');
+  if (!project) return null;
+  const projectTasks = tasks.filter(t => t.projectId === project.id);
+  const members = team.filter(m => project.members.includes(m.id));
+  return <div className="mx-auto max-w-7xl space-y-6"><Button variant="ghost" onClick={() => setSelectedProjectId(null)}>← Back to projects</Button><Card><div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"><div><Badge>{project.status}</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight">{project.name}</h2><p className="mt-2 max-w-2xl text-muted">{project.description}</p></div><div className="min-w-56"><div className="mb-2 flex justify-between text-sm"><span className="text-muted">Overall progress</span><span>{project.progress}%</span></div><ProgressBar value={project.progress}/><div className="mt-4 flex items-center justify-between"><AvatarStack members={members.map(m => m.avatar)}/><span className="text-sm text-muted">Due {project.dueDate}</span></div></div></div></Card><Tabs tabs={[...tabs]} value={tab} onChange={setTab}/><section className="surface-card rounded-2xl p-5">{tab === 'Overview' && <div className="grid gap-4 md:grid-cols-3"><Card><TimerReset/><p className="mt-3 text-2xl font-semibold">{projectTasks.length}</p><p className="text-sm text-muted">Tracked tasks</p></Card><Card><FileText/><p className="mt-3 text-2xl font-semibold">12</p><p className="text-sm text-muted">Shared files</p></Card><Card><BarChart3/><p className="mt-3 text-2xl font-semibold">{project.progress}%</p><p className="text-sm text-muted">Delivery confidence</p></Card></div>}{tab === 'Tasks' && <div className="space-y-3">{projectTasks.map(t => <div key={t.id} className="flex items-center justify-between rounded-xl border border-[rgb(var(--border))] p-3"><span>{t.title}</span><Badge>{t.status}</Badge></div>)}</div>}{tab === 'Team' && <div className="grid gap-3 md:grid-cols-3">{members.map(m => <Card key={m.id}><div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-950">{m.avatar}</div><div><p className="font-semibold">{m.name}</p><p className="text-sm text-muted">{m.role}</p></div></div></Card>)}</div>}{tab === 'Timeline' && <div className="space-y-4">{['Planning complete', 'Design review', 'Engineering sprint', 'Launch readiness'].map((x,i)=><div key={x} className="flex gap-3"><span className="mt-1 h-3 w-3 rounded-full bg-[rgb(var(--brand))]"/><div><p className="font-medium">{x}</p><p className="text-sm text-muted">Week {i+1}</p></div></div>)}</div>}{tab === 'Files' && <div className="grid gap-3 md:grid-cols-3">{['Launch-plan.pdf','Research-notes.fig','QA-checklist.csv'].map(f => <Card key={f}><FileText/><p className="mt-3 font-medium">{f}</p><p className="text-sm text-muted">Updated recently</p></Card>)}</div>}{tab === 'Activity' && <div className="space-y-3">{['Sarah updated status','Daniel pushed files','Maya resolved QA issue'].map(a => <p key={a} className="rounded-xl border border-[rgb(var(--border))] p-3 text-sm">{a}</p>)}</div>}{tab === 'Comments' && <div><div className="rounded-xl border border-[rgb(var(--border))] p-4"><MessageSquare/><p className="mt-2 text-muted">Strong progress. Keep launch risks visible in standup.</p></div></div>}{tab === 'Analytics' && <ProductivityChart/>}</section></div>;
+}
