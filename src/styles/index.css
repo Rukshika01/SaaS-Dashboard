@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-flow-50: #f4f7fb;
+  --color-flow-100: #e7edf6;
+  --color-flow-200: #cbd8ea;
+  --color-flow-300: #9fb8d7;
+  --color-flow-400: #6e93bf;
+  --color-flow-500: #4b74a5;
+  --color-flow-600: #385d89;
+  --color-flow-700: #304c6f;
+  --color-flow-800: #2c415c;
+  --color-flow-900: #29384d;
+  --color-ink-950: #070a12;
+}
+
+:root {
+  color-scheme: light;
+  --bg: 248 250 252;
+  --bg-soft: 241 245 249;
+  --surface: 255 255 255;
+  --surface-raised: 255 255 255;
+  --border: 226 232 240;
+  --text: 15 23 42;
+  --muted: 100 116 139;
+  --muted-2: 148 163 184;
+  --brand: 55 93 137;
+  --brand-2: 91 127 179;
+  --success: 22 163 74;
+  --warning: 217 119 6;
+  --danger: 220 38 38;
+  --shadow: 15 23 42;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: 7 10 18;
+  --bg-soft: 13 18 30;
+  --surface: 15 21 34;
+  --surface-raised: 20 27 43;
+  --border: 39 49 70;
+  --text: 241 245 249;
+  --muted: 148 163 184;
+  --muted-2: 100 116 139;
+  --brand: 116 154 211;
+  --brand-2: 78 120 180;
+  --success: 74 222 128;
+  --warning: 251 191 36;
+  --danger: 248 113 113;
+  --shadow: 0 0 0;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgb(var(--brand) / 0.13), transparent 34rem),
+    linear-gradient(135deg, rgb(var(--bg)), rgb(var(--bg-soft)));
+  color: rgb(var(--text));
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .6; }
+:focus-visible { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility surface-card {
+  background: rgb(var(--surface) / 0.82);
+  border: 1px solid rgb(var(--border) / 0.86);
+  box-shadow: 0 16px 48px rgb(var(--shadow) / 0.08);
+  backdrop-filter: blur(18px);
+}
+
+@utility text-muted { color: rgb(var(--muted)); }
+@utility text-soft { color: rgb(var(--muted-2)); }
+@utility brand-gradient { background: linear-gradient(135deg, rgb(var(--brand)), rgb(var(--brand-2))); }
